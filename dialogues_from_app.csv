@@ -1,0 +1,32 @@
+KEY,TAG,SPEAKER,TONE OF VOICE,ENGLISH,RUSSIAN,GERMAN,SPANISH,CHINESE,AUDIO FILE,STATUS,NOTE
+MEG_DAUGHTER_MESSAGE,MAIN,Meg,"Low, gritty, grounded female tone. Hardened survivor making a final audio log. Firm urgent plea, then heartfelt goodbye to daughter. Professional demeanor, quiet heartbreaking weariness. Fighting back tears, trying to sound strong.","To whoever finds this log... please, get it to my daughter. Lily, it's Mom. Things went sideways. I'm not coming home. Be brave for me. I love you, and I'll always be watching your back. End of transmission.","Если ты смотришь эту запись, пожалуйста, сделай для меня одолжение. Я знаю как работает система. Поэтому обращаюсь к тебе напрямую. Передай моей дочери это сообщение.","Wer auch immer das hier findet... bitte, gebt es meiner Tochter. Lily, hier ist Mom. Es ist schiefgelaufen. Ich komme nicht nach Hause. Sei tapfer für mich. Ich liebe dich, und ich werde immer auf dich aufpassen. Ende der Übertragung.","Quien encuentre esto... por favor, háganlo llegar a mi hija. Lily, soy mamá. Todo salió mal. No voy a volver a casa. Sé valiente por mí. Te quiero, y siempre cuidaré de ti. Fin de la transmisión.",无论谁找到这段记录……请把它交给我女儿。莉莉，是妈妈。事情出了差错。我回不了家了。替我勇敢。我爱你，我会永远守护你。传输结束。,Meg_00.wav,WRITTEN,"[P00] Алтарь и Запись для Лили — после третьей свечи, прямо в камеру"
+MEG_ALTAR_MESSAGE_TO_LILY,MAIN,Meg,,,"Лили, твоя мама попала в серьёзную передрягу и не факт что я вернусь. Помни — что бы ни случилось, мама всегда с тобой. Неважно что.",,,,,DRAFT,[P00] Алтарь и Запись для Лили
+STEVE_COMMENT_START,MAIN,Steve,"Deep, gravelly, exhausted male tone. Completely burned out and dead inside. Bored, cynical, monotone. Low energy, flat intonation. Sigh heavily before speaking. Emphasize swear word with tired frustration.",Sigh... For fuck's sake. Another weepy mom and her little girl. Let's just wrap this sob story up and go watch the Tigers game.,О боже... Очередная слезливая история мамы и её дочки. Как трогательно.,Seufz... Verdammte Scheiße. Wieder so eine heulende Mutti mit ihrem kleinen Mädchen. Lass uns die Schnulze hier abschließen und das Tigers-Spiel gucken.,Suspiro... Joder. Otra mamá llorona con su niñita. Terminemos con este dramón y vamos a ver el partido de los Tigers.,叹气……他妈的。又是一个哭哭啼啼的妈妈和她的小女孩。赶紧结束这出苦情戏，看老虎队比赛去吧。,Steve_01.wav,WRITTEN,[P00] Алтарь и Запись для Лили
+JACK_CHECK_SIGNAL_LOST,MAIN,Jack,,,"Мэг, приём, всё в порядке? Связь отключилась?",,,,,DRAFT,[P00] Алтарь и Запись для Лили — рация
+MEG_CONFIRM_ALL_CLEAR,MAIN,Meg,,,"Да, всё в норме. Нужно было оставить кое-какое послание. Не бери в голову.",,,,,DRAFT,[P00] Алтарь и Запись для Лили
+JACK_NAVIGATE_BAKER_ST,MAIN,Jack,,,"Мм, понимаю. Хорошо, напротив тебя должна быть Бейкер-стрит, оттуда около 7 минут до вышки связи. Я с тобой. Постарайся не отключаться.",,,,,DRAFT,[P00] Алтарь и Запись для Лили
+MEG_ACKNOWLEDGE_MOVE,MAIN,Meg,,,Извини. Нет проблем.,,,,,DRAFT,[P00] Алтарь и Запись для Лили
+MEG_FOUND_CHAIN,MAIN,Meg,,"Damn, there's a chain. Need to find something to break it.",Чёрт... Надо найти чем сломать эту цепь.,,,,Meg_02.wav,WRITTEN,[P01] Переулок и Дверь на цепи — тихо
+MEG_DOOR_LOCKED_NEED_KEY,MAIN,Meg,,,Заперто. Нужен ключ.,,,,,DRAFT,[P01] Первый Спуск в Подвал
+MEG_PASSAGE_GONE_SHOCK,MAIN,Meg,,,Какого... Тут же был проход!,,,,,DRAFT,[P01] Души которые должны были встретиться — нервно
+MEG_READ_SOULS_INSCRIPTION,MAIN,Meg,,,"""Души которые должны были встретиться""... Что за бред.",,,,,DRAFT,[P01] Души которые должны были встретиться — читая надпись
+MEG_FIND_KEY_IN_TRASH,MAIN,Meg,,,"Что ты делаешь в мусорке, малыш...",,,,,DRAFT,[P01] Души которые должны были встретиться — находя ключ
+MEG_HEAR_SOMEONE_WHISPER,MAIN,Meg,,,Кто здесь...,,,,,DRAFT,[P01] Кусачки и Преследователь — хриплым шёпотом
+MEG_SCARE_REACTION,MAIN,Meg,,Fuck! What the hell was that?!,"Что это, блять, было?!",,,,,DRAFT,[P01] Кусачки и Преследователь — после того как свет включился
+JACK_CHECK_OKAY,MAIN,Jack,,"Meg? Talk to me, are you okay?","Мэг? Мэг, ты целая? Я тут шум слышу.",,,,,DRAFT,"[P01] Кусачки и Преследователь — рация, с помехами"
+MEG_CONFIRM_OKAY_MOVING,MAIN,Meg,,,Я... да. Иду дальше.,,,,,DRAFT,[P01] Кусачки и Преследователь
+MEG_READ_WHOSE_HOUSE,MAIN,Meg,,,Чей дом?..,,,,,DRAFT,[P01] Это Мой Дом — читая
+MEG_PANIC_CURSE,MAIN,Meg,,,Чёрт. Чёрт-чёрт-чёрт.,,,,,DRAFT,[P01] Это Мой Дом
+JACK_DEMAND_SITUATION,MAIN,Jack,,,"Мэг, что у тебя там?!",,,,,DRAFT,"[P01] Это Мой Дом — рация, паникует"
+MEG_BEING_FOLLOWED,MAIN,Meg,,"I don't know... Damn it, I think something is following me.",Меня снова кто-то преследует!,,,,,DRAFT,[P01] Это Мой Дом
+MEG_PUSH_FORWARD_CHANT,MAIN,Meg,,,Давай-давай-давай...,,,,,DRAFT,[P01] Прорыв на Улицу 01 — отодвигая мусор
+MEG_CURSE_HIT,MAIN,Meg,,,Чёрт!,,,,,DRAFT,[P01] Прорыв на Улицу 01
+MEG_EXHAUSTED_CURSE,MAIN,Meg,,,...твою мать.,,,,,DRAFT,"[P01] Прорыв на Улицу 01 — тяжело дыша, почти срывается"
+JACK_CONFIRM_OUTSIDE_BREATHE,MAIN,Jack,,,"Мэг? Мэг, ты вышла? Я слышу что ты на улице. Дыши, дыши.",,,,,DRAFT,"[P01] Прорыв на Улицу 01 — рация, с облегчением"
+MEG_CALM_DEEP_BREATH,MAIN,Meg,,,Спокойно... глубокий вдох и выдох. Продолжаем двигаться.,,,,,DRAFT,"[U01] БИТ 1 — Выход на улицу и Лабиринт Мешков — выбегая из переулка, тяжело дышит"
+MEG_RADIO_ON_STREET,MAIN,Meg,,,"Джек, приём, я вышла на улицу.",,,,,DRAFT,[U01] БИТ 1 — Выход на улицу и Лабиринт Мешков — по рации
+JACK_NAVIGATE_UP_STREET,MAIN,Jack,,,"Отлично, двигайся вверх по улице, там будет переход на Бейкер-стрит, оттуда до башни совсем немного.",,,,,DRAFT,[U01] БИТ 1 — Выход на улицу и Лабиринт Мешков
+MEG_SURREAL_DAMN,MAIN,Meg,,,Чёрт...,,,,,DRAFT,[U01] БИТ 3 — Сюрреализм и Падающий Шкаф
+MEG_REPORT_BLOCKAGE,MAIN,Meg,,,"Приём, Джек, впереди завал, улица перекрыта.",,,,,DRAFT,[U01] БИТ 4 — Тупик и Леденец
+JACK_SUGGEST_LEFT_DETOUR,MAIN,Jack,,,"Всё в порядке, слева должен быть переход на следующую, попробуй пройти там.",,,,,DRAFT,[U01] БИТ 4 — Тупик и Леденец
+MEG_DAMN_ALLEYS,MAIN,Meg,,,Чёртовы переходы...,,,,,DRAFT,[U01] БИТ 4 — Тупик и Леденец — с раздражением и страхом
