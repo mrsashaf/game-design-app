@@ -263,6 +263,40 @@
   .modal-actions .btn-ok { background: var(--primary); border-color: var(--primary); }
   .modal-actions .btn-ok:hover { background: #4f52d1; }
 
+  /* Dialogues table */
+  .dialogue-modal { width: min(1280px, calc(100vw - 48px)); height: min(820px, calc(100vh - 48px)); padding: 0; display: flex; flex-direction: column; overflow: hidden; }
+  .dialogue-head { height: 56px; padding: 0 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .dialogue-head h3 { margin: 0; font-size: 14px; flex: 1; display: flex; align-items: center; gap: 8px; }
+  .dialogue-head h3 .material-symbols-outlined { color: var(--primary); font-size: 20px; }
+  .dialogue-count { color: var(--text-muted); font-size: 11px; font-weight: 500; }
+  .dialogue-tools { padding: 10px 16px; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; flex-shrink: 0; }
+  .dialogue-tools input, .dialogue-tools select { background: #12141a; border: 1px solid var(--border); color: var(--text-main); border-radius: 6px; padding: 7px 9px; font-size: 12px; outline: none; user-select: text; }
+  .dialogue-tools input { min-width: 240px; flex: 1; }
+  .dialogue-btn { background: var(--btn-bg); border: 1px solid var(--border); color: var(--text-main); border-radius: 6px; padding: 7px 10px; cursor: pointer; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+  .dialogue-btn:hover { background: var(--btn-hover); }
+  .dialogue-btn.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .dialogue-btn.primary:hover { background: #4f52d1; }
+  .dialogue-btn.danger:hover { border-color: #7f1d1d; background: #4b2030; color: #fca5a5; }
+  .dialogue-btn .material-symbols-outlined { font-size: 16px; }
+  .dialogue-table-wrap { flex: 1; overflow: auto; }
+  .dialogue-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .dialogue-table th { position: sticky; top: 0; z-index: 2; background: #171a23; color: var(--text-muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--border); }
+  .dialogue-table td { padding: 7px 8px; border-bottom: 1px solid #252836; vertical-align: top; font-size: 12px; color: var(--text-main); }
+  .dialogue-table tr.deleted { opacity: 0.45; }
+  .dialogue-table tr.deleted textarea, .dialogue-table tr.deleted input { text-decoration: line-through; }
+  .dialogue-table .col-scene { width: 150px; }
+  .dialogue-table .col-event { width: 190px; }
+  .dialogue-table .col-speaker { width: 120px; }
+  .dialogue-table .col-line { width: auto; }
+  .dialogue-table .col-actions { width: 78px; text-align: right; }
+  .dialogue-cell-muted { color: var(--text-muted); line-height: 1.35; word-break: break-word; }
+  .dialogue-table input, .dialogue-table textarea { width: 100%; background: #12141a; border: 1px solid transparent; color: var(--text-main); border-radius: 6px; padding: 7px 8px; font-family: inherit; font-size: 12px; outline: none; user-select: text; }
+  .dialogue-table textarea { min-height: 54px; resize: vertical; line-height: 1.45; }
+  .dialogue-table input:focus, .dialogue-table textarea:focus { border-color: var(--primary); background: #10131a; }
+  .dialogue-empty { padding: 32px; color: var(--text-muted); text-align: center; font-size: 13px; }
+  .dialogue-foot { padding: 10px 16px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-shrink: 0; }
+  .dialogue-hint { color: var(--text-muted); font-size: 11px; line-height: 1.4; }
+
   .zoom-ui { position: absolute; bottom: 16px; right: 16px; background: rgba(22,24,31,0.9); padding: 5px 10px; border-radius: 8px; font-size: 11px; border: 1px solid var(--border); pointer-events: none; }
 
   #selection-box { position: absolute; border: 1px dashed rgba(99,102,241,0.8); background: rgba(99,102,241,0.1); pointer-events: none; z-index: 1000; display: none; }
@@ -293,6 +327,7 @@
     <div style="flex:1"></div>
     <button class="tb" onclick="app.addEvent()" title="Добавить событие"><span class="material-symbols-outlined">add_box</span>Событие</button>
     <button class="tb" onclick="app.addTextNode()" title="Текстовая метка"><span class="material-symbols-outlined">text_fields</span>Текст</button>
+    <button class="tb" onclick="app.openDialoguesTable()" title="Dialogues table"><span class="material-symbols-outlined">table_chart</span>Dialogues</button>
     <button class="tb" onclick="app.applyDefaultBeats()" title="Заполнить биты из шаблона"><span class="material-symbols-outlined">playlist_add</span>Заполнить биты</button>
     <div class="tb-sep"></div>
     <button class="tb" id="btn-undo" onclick="app.undo()" disabled title="Назад (Ctrl+Z)"><span class="material-symbols-outlined">undo</span></button>
@@ -1203,6 +1238,207 @@ const app = (() => {
   }
 
   // ── SIDEBAR (scene navigator + templates) ───────────────────────────────────
+  // Dialogues table
+  function attrEsc(s) { return esc(s).replace(/"/g, '&quot;'); }
+  function stripDialogueQuotes(s) {
+    return String(s || '').trim().replace(/^[«"“”„]+/, '').replace(/[»"“”]+$/, '').trim();
+  }
+  function splitDialogueLine(line) {
+    const text = String(line || '').trim();
+    const m = text.match(/^([^:]{1,48}):\s*(.*)$/);
+    if (!m) return { speaker: '', text };
+    return { speaker: m[1].trim(), text: stripDialogueQuotes(m[2]) };
+  }
+  function buildDialogueLine(row) {
+    const text = String(row.text || '').trim();
+    const speaker = String(row.speaker || '').trim();
+    if (!text) return '';
+    return speaker ? `${speaker}: ${text}` : text;
+  }
+  function collectDialogueRows() {
+    const rows = [];
+    (project.scenes || []).forEach(scene => {
+      (scene.nodes || []).forEach(node => {
+        const layer = node.layers && node.layers.dialogues;
+        const content = layer && layer.content ? String(layer.content) : '';
+        if (!content.trim()) return;
+        content.split(/\r?\n/).forEach((line, lineIndex) => {
+          if (!line.trim()) return;
+          const parsed = splitDialogueLine(line);
+          rows.push({
+            id: `${scene.id}__${node.id}__${lineIndex}`,
+            sceneId: scene.id,
+            nodeId: node.id,
+            lineIndex,
+            sceneTitle: scene.title || scene.id,
+            eventTitle: node.title || node.id,
+            speaker: parsed.speaker,
+            text: parsed.text,
+            deleted: false
+          });
+        });
+      });
+    });
+    return rows;
+  }
+  function csvCell(v) {
+    const s = String(v == null ? '' : v);
+    return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  }
+  function rowsToCsv(rows) {
+    const header = ['KEY','SCENE','EVENT','SPEAKER','TEXT'];
+    const body = rows
+      .filter(r => !r.deleted)
+      .map(r => [r.id, r.sceneTitle, r.eventTitle, r.speaker, r.text].map(csvCell).join(','));
+    return [header.join(','), ...body].join('\r\n') + '\r\n';
+  }
+  function downloadText(filename, text, type = 'text/csv;charset=utf-8') {
+    const blob = new Blob([text], { type });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+  function dateStamp() {
+    const d = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}_${pad(d.getHours())}-${pad(d.getMinutes())}`;
+  }
+  function applyDialogueRows(rows) {
+    const touched = new Set(rows.map(r => `${r.sceneId}__${r.nodeId}`));
+    touched.forEach(key => {
+      const [sceneId, nodeId] = key.split('__');
+      const scene = project.scenes.find(s => s.id === sceneId);
+      const node = scene && scene.nodes.find(n => n.id === nodeId);
+      if (!node) return;
+      const group = rows
+        .filter(r => r.sceneId === sceneId && r.nodeId === nodeId && !r.deleted)
+        .sort((a, b) => a.lineIndex - b.lineIndex);
+      if (!node.layers) node.layers = {};
+      if (!node.layers.dialogues) node.layers.dialogues = { content: '', comments: [], beats: [] };
+      node.layers.dialogues.content = group.map(buildDialogueLine).filter(Boolean).join('\n');
+    });
+    commitState();
+    renderAll();
+  }
+  function openDialoguesTable() {
+    const rows = collectDialogueRows();
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    const scenes = [...new Set(rows.map(r => r.sceneTitle))];
+    const modal = document.createElement('div');
+    modal.className = 'modal dialogue-modal';
+    modal.innerHTML = `
+      <div class="dialogue-head">
+        <h3><span class="material-symbols-outlined">table_chart</span>Dialogues Table <span class="dialogue-count"></span></h3>
+        <button class="dialogue-btn btn-close"><span class="material-symbols-outlined">close</span>Close</button>
+      </div>
+      <div class="dialogue-tools">
+        <input class="dlg-search" type="text" placeholder="Search key, scene, event, speaker, text">
+        <select class="dlg-scene">
+          <option value="">All scenes</option>
+          ${scenes.map(s => `<option value="${attrEsc(s)}">${esc(s)}</option>`).join('')}
+        </select>
+        <button class="dialogue-btn btn-export"><span class="material-symbols-outlined">file_download</span>Export CSV</button>
+        <button class="dialogue-btn btn-backup"><span class="material-symbols-outlined">save</span>Backup CSV</button>
+        <button class="dialogue-btn btn-undo"><span class="material-symbols-outlined">undo</span>Undo App</button>
+      </div>
+      <div class="dialogue-table-wrap"></div>
+      <div class="dialogue-foot">
+        <div class="dialogue-hint">Delete is soft until Save. App undo works after saved table changes.</div>
+        <div>
+          <button class="dialogue-btn btn-cancel">Cancel</button>
+          <button class="dialogue-btn primary btn-save"><span class="material-symbols-outlined">check</span>Save Changes</button>
+        </div>
+      </div>
+    `;
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    const wrap = modal.querySelector('.dialogue-table-wrap');
+    const search = modal.querySelector('.dlg-search');
+    const sceneFilter = modal.querySelector('.dlg-scene');
+    const count = modal.querySelector('.dialogue-count');
+
+    function filteredRows() {
+      const q = search.value.trim().toLowerCase();
+      const scene = sceneFilter.value;
+      return rows
+        .map((row, idx) => ({ row, idx }))
+        .filter(({ row }) => !scene || row.sceneTitle === scene)
+        .filter(({ row }) => {
+          if (!q) return true;
+          return [row.id, row.sceneTitle, row.eventTitle, row.speaker, row.text]
+            .some(v => String(v || '').toLowerCase().includes(q));
+        });
+    }
+    function renderRows() {
+      const visible = filteredRows();
+      count.textContent = `${visible.filter(x => !x.row.deleted).length} / ${rows.length}`;
+      if (!visible.length) {
+        wrap.innerHTML = '<div class="dialogue-empty">No dialogues found.</div>';
+        return;
+      }
+      wrap.innerHTML = `
+        <table class="dialogue-table">
+          <thead>
+            <tr>
+              <th class="col-scene">Scene</th>
+              <th class="col-event">Event</th>
+              <th class="col-speaker">Speaker</th>
+              <th class="col-line">Dialogue</th>
+              <th class="col-actions"></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${visible.map(({ row, idx }) => `
+              <tr class="${row.deleted ? 'deleted' : ''}" data-ridx="${idx}">
+                <td><div class="dialogue-cell-muted">${esc(row.sceneTitle)}</div></td>
+                <td><div class="dialogue-cell-muted">${esc(row.eventTitle)}</div></td>
+                <td><input class="dlg-speaker" value="${attrEsc(row.speaker)}"></td>
+                <td><textarea class="dlg-text">${esc(row.text)}</textarea></td>
+                <td class="col-actions"><button class="dialogue-btn danger btn-row-delete">${row.deleted ? 'Restore' : 'Delete'}</button></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      wrap.querySelectorAll('tr[data-ridx]').forEach(tr => {
+        const row = rows[Number(tr.dataset.ridx)];
+        tr.querySelector('.dlg-speaker').addEventListener('input', e => { row.speaker = e.target.value; });
+        tr.querySelector('.dlg-text').addEventListener('input', e => { row.text = e.target.value; });
+        tr.querySelector('.btn-row-delete').addEventListener('click', () => {
+          row.deleted = !row.deleted;
+          renderRows();
+        });
+      });
+    }
+
+    search.addEventListener('input', renderRows);
+    sceneFilter.addEventListener('change', renderRows);
+    modal.querySelector('.btn-close').onclick = () => overlay.remove();
+    modal.querySelector('.btn-cancel').onclick = () => overlay.remove();
+    modal.querySelector('.btn-export').onclick = () => downloadText(`ABERRATION_dialogues_export_${dateStamp()}.csv`, rowsToCsv(rows));
+    modal.querySelector('.btn-backup').onclick = () => {
+      const csv = rowsToCsv(rows);
+      localStorage.setItem('ld_dialogues_backup', JSON.stringify({ createdAt: new Date().toISOString(), csv }));
+      downloadText(`ABERRATION_dialogues_backup_${dateStamp()}.csv`, csv);
+    };
+    modal.querySelector('.btn-undo').onclick = () => {
+      undo();
+      overlay.remove();
+      openDialoguesTable();
+    };
+    modal.querySelector('.btn-save').onclick = () => {
+      applyDialogueRows(rows);
+      overlay.remove();
+    };
+    overlay.addEventListener('mousedown', e => { if (e.target === overlay) overlay.remove(); });
+    renderRows();
+    setTimeout(() => search.focus(), 50);
+  }
+
   function renderSidebar() {
     const scenesContainer = document.getElementById('scenes-container');
     const templatesContainer = document.getElementById('templates-container');
@@ -1896,7 +2132,7 @@ const app = (() => {
     addEvent, addTextNode, addScene,
     resetView: () => { view = { x:40, y:40, zoom:0.85 }; applyView(); },
     undo, clearScene, resetProject, exportProject, importProject,
-    applyDefaultBeats
+    applyDefaultBeats, openDialoguesTable
   };
 })();
 </script>
