@@ -291,6 +291,12 @@
   .dialogue-table .col-actions { width: 78px; text-align: right; }
   .dialogue-cell-muted { color: var(--text-muted); line-height: 1.35; word-break: break-word; }
   .dialogue-table input, .dialogue-table textarea { width: 100%; background: #12141a; border: 1px solid transparent; color: var(--text-main); border-radius: 6px; padding: 7px 8px; font-family: inherit; font-size: 12px; outline: none; user-select: text; }
+  .dialogue-table .dlg-speaker { font-weight: 800; border-color: rgba(255,255,255,0.08); }
+  .dialogue-table .speaker-meg { color: #dbeafe; background: rgba(59,130,246,0.14); border-color: rgba(59,130,246,0.35); }
+  .dialogue-table .speaker-jack { color: #dcfce7; background: rgba(16,185,129,0.14); border-color: rgba(16,185,129,0.35); }
+  .dialogue-table .speaker-steve { color: #ffedd5; background: rgba(249,115,22,0.14); border-color: rgba(249,115,22,0.35); }
+  .dialogue-table .speaker-eyesys { color: #cffafe; background: rgba(6,182,212,0.14); border-color: rgba(6,182,212,0.4); }
+  .dialogue-table .speaker-unknown { color: #e9d5ff; background: rgba(168,85,247,0.12); border-color: rgba(168,85,247,0.3); }
   .dialogue-table textarea { min-height: 54px; resize: vertical; line-height: 1.45; }
   .dialogue-table input:focus, .dialogue-table textarea:focus { border-color: var(--primary); background: #10131a; }
   .dialogue-empty { padding: 32px; color: var(--text-muted); text-align: center; font-size: 13px; }
@@ -1255,6 +1261,17 @@ const app = (() => {
     if (!text) return '';
     return speaker ? `${speaker}: ${text}` : text;
   }
+  function speakerClass(speaker) {
+    const s = String(speaker || '').toLowerCase();
+    if (s.includes('мэг') || s.includes('meg')) return 'speaker-meg';
+    if (s.includes('джек') || s.includes('jack')) return 'speaker-jack';
+    if (s.includes('стив') || s.includes('steve')) return 'speaker-steve';
+    if (s.includes('eyesys') || s.includes('система')) return 'speaker-eyesys';
+    return 'speaker-unknown';
+  }
+  function isEyesysRow(row) {
+    return /eyesys|система/i.test(`${row.speaker || ''} ${row.text || ''}`);
+  }
   function collectDialogueRows() {
     const rows = [];
     (project.scenes || []).forEach(scene => {
@@ -1340,6 +1357,11 @@ const app = (() => {
           <option value="">All scenes</option>
           ${scenes.map(s => `<option value="${attrEsc(s)}">${esc(s)}</option>`).join('')}
         </select>
+        <select class="dlg-eye">
+          <option value="all">EYESYS: show</option>
+          <option value="hide">EYESYS: hide</option>
+          <option value="only">EYESYS: only</option>
+        </select>
         <button class="dialogue-btn btn-export"><span class="material-symbols-outlined">file_download</span>Export CSV</button>
         <button class="dialogue-btn btn-backup"><span class="material-symbols-outlined">save</span>Backup CSV</button>
         <button class="dialogue-btn btn-undo"><span class="material-symbols-outlined">undo</span>Undo App</button>
@@ -1359,14 +1381,17 @@ const app = (() => {
     const wrap = modal.querySelector('.dialogue-table-wrap');
     const search = modal.querySelector('.dlg-search');
     const sceneFilter = modal.querySelector('.dlg-scene');
+    const eyeFilter = modal.querySelector('.dlg-eye');
     const count = modal.querySelector('.dialogue-count');
 
     function filteredRows() {
       const q = search.value.trim().toLowerCase();
       const scene = sceneFilter.value;
+      const eyeMode = eyeFilter.value;
       return rows
         .map((row, idx) => ({ row, idx }))
         .filter(({ row }) => !scene || row.sceneTitle === scene)
+        .filter(({ row }) => eyeMode === 'all' || (eyeMode === 'hide' ? !isEyesysRow(row) : isEyesysRow(row)))
         .filter(({ row }) => {
           if (!q) return true;
           return [row.id, row.sceneTitle, row.eventTitle, row.speaker, row.text]
@@ -1396,7 +1421,7 @@ const app = (() => {
               <tr class="${row.deleted ? 'deleted' : ''}" data-ridx="${idx}">
                 <td><div class="dialogue-cell-muted">${esc(row.sceneTitle)}</div></td>
                 <td><div class="dialogue-cell-muted">${esc(row.eventTitle)}</div></td>
-                <td><input class="dlg-speaker" value="${attrEsc(row.speaker)}"></td>
+                <td><input class="dlg-speaker ${speakerClass(row.speaker)}" value="${attrEsc(row.speaker)}"></td>
                 <td><textarea class="dlg-text">${esc(row.text)}</textarea></td>
                 <td class="col-actions"><button class="dialogue-btn danger btn-row-delete">${row.deleted ? 'Restore' : 'Delete'}</button></td>
               </tr>
@@ -1406,7 +1431,10 @@ const app = (() => {
       `;
       wrap.querySelectorAll('tr[data-ridx]').forEach(tr => {
         const row = rows[Number(tr.dataset.ridx)];
-        tr.querySelector('.dlg-speaker').addEventListener('input', e => { row.speaker = e.target.value; });
+        tr.querySelector('.dlg-speaker').addEventListener('input', e => {
+          row.speaker = e.target.value;
+          e.target.className = `dlg-speaker ${speakerClass(row.speaker)}`;
+        });
         tr.querySelector('.dlg-text').addEventListener('input', e => { row.text = e.target.value; });
         tr.querySelector('.btn-row-delete').addEventListener('click', () => {
           row.deleted = !row.deleted;
@@ -1417,6 +1445,7 @@ const app = (() => {
 
     search.addEventListener('input', renderRows);
     sceneFilter.addEventListener('change', renderRows);
+    eyeFilter.addEventListener('change', renderRows);
     modal.querySelector('.btn-close').onclick = () => overlay.remove();
     modal.querySelector('.btn-cancel').onclick = () => overlay.remove();
     modal.querySelector('.btn-export').onclick = () => downloadText(`ABERRATION_dialogues_export_${dateStamp()}.csv`, rowsToCsv(rows));
